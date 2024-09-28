@@ -104,3 +104,31 @@ export const loginUser = async (req, res) => {
         res.status(500).json({ message: 'Error logging in', error: error.message });
     }
 };
+
+// Fetch user details
+export const getUserDetails = async (req, res) => {
+    try {
+        const userId = req.user.id; // Assuming you have middleware that attaches user info to req
+        console.log("Fetching details for user ID:", userId);
+
+        // Find user by ID
+        const user = await User.findById(userId).select('-password'); // Exclude password from response
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Return user details
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            role: user.role, // Ensure this field exists in your User model
+            gender: user.gender // Ensure this field exists in your User model
+        });
+    } catch (error) {
+        console.error("Error fetching user details:", error);
+        res.status(500).json({ message: 'Error fetching user details', error: error.message });
+    }
+};
