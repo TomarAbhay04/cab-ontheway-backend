@@ -30,7 +30,8 @@ export const createPost = async (req, res) => {
 
     export const getPosts = async (req, res) => {
       try {
-        const posts = await Post.find(); // Fetch all posts from the database
+        const posts = await Post.find().sort({ createdAt: -1 });
+         // Fetch all posts from the database
         res.status(200).json({
           success: true,
           data: posts,
@@ -54,7 +55,7 @@ export const getPostsByUserId = async (req, res) => {
     }
 
     // Correct usage of ObjectId constructor with 'new'
-    const posts = await Post.find({ userId: new mongoose.Types.ObjectId(userId) });
+    const posts = await Post.find({ userId: new mongoose.Types.ObjectId(userId) }).sort({ createdAt: -1 });
 
     if (posts.length === 0) {
       return res.status(404).json({ message: 'No posts found for this user.' });
