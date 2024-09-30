@@ -2,14 +2,14 @@ import Post from "../models/PostModel.js";
 import mongoose from 'mongoose';
 
 export const createPost = async (req, res) => {
-  const { title, description, imageUrl } = req.body;
+  const { title, description = '', imageUrl = null } = req.body;
 
-  if (!title || !description || !imageUrl) {
-    return res.status(400).json({ message: 'Please provide title, description, and image URL.' });
-  }
+    if(!title){
+      return res.status(400).json({ message: 'Please provide title.' });
+    }
 
   try {
-
+    // console.log('data', req.body);
     const userId = req.user._id;
     const newPost = new Post({
       title,
@@ -19,7 +19,6 @@ export const createPost = async (req, res) => {
     });
 
     await newPost.save();
-
     return res.status(201).json({ message: 'Post created successfully', post: newPost });
   } catch (error) {
     console.error('Error creating post:', error);
@@ -31,6 +30,15 @@ export const createPost = async (req, res) => {
     export const getPosts = async (req, res) => {
       try {
         const posts = await Post.find().sort({ createdAt: -1 });
+
+        if (!posts || posts.length === 0) {
+          // If no posts are found, return a specific message
+          return res.status(404).json({
+            success: false,
+            message: 'No posts available',
+          });
+        }    
+
          // Fetch all posts from the database
         res.status(200).json({
           success: true,
@@ -57,8 +65,10 @@ export const getPostsByUserId = async (req, res) => {
     // Correct usage of ObjectId constructor with 'new'
     const posts = await Post.find({ userId: new mongoose.Types.ObjectId(userId) }).sort({ createdAt: -1 });
 
-    if (posts.length === 0) {
-      return res.status(404).json({ message: 'No posts found for this user.' });
+    if (!posts || posts.length === 0) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'No posts found for this user.' });
     }
 
     // Return the user's posts
