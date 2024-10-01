@@ -1,11 +1,14 @@
 import express from 'express';
-import { registerUser, loginUser, getUserDetails } from '../controllers/userController.js'; 
+import { verifyOTPAndRegister, loginUser, getUserDetails, sendOTP } from '../controllers/userController.js'; 
 import protect  from '../middleware/authMiddleware.js';   
 
 
 const router = express.Router();
 
-router.post('/signup', registerUser);
+// router.post('/signup', registerUser);
+router.post('/signup', verifyOTPAndRegister);
+
+router.post('/send-otp', sendOTP);
 
 router.post('/login', loginUser);
 

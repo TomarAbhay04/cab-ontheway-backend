@@ -6,6 +6,14 @@ import { getPosts, createPost, getPostsByUserId, savePost } from '../controllers
 
 const router = express.Router();
 
+
+// Middleware to attach io to the request object
+
+router.use((req, res, next) => {
+    req.io = io.app.get('io');
+    next();
+});
+
 router.get('/', getPosts);
 
 // Route for fetching a User's post by ID
