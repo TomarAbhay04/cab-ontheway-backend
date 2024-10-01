@@ -48,6 +48,8 @@ app.get('/', (req, res) => {
     res.send('Server is up and running!');
 });
 
+// cabonway
+
 app.use('/api/users', userRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/posts', postRoutes);
