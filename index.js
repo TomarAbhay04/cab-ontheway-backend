@@ -65,7 +65,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/payment-sub', userSubRoutes);
 
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
