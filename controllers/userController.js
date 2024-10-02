@@ -111,59 +111,6 @@ export const sendOTP = async (req, res) => {
 
 
 
-// Register a new user
-// export const registerUser = async (req, res) => {
-//     const { name, email, phoneNumber, password, confirmPassword } = req.body;
-
-//     console.log("Received data:", { name, email, phoneNumber, password, confirmPassword });
-
-//     if (!name || !email || !phoneNumber || !password || !confirmPassword) {
-//         return res.status(400).json({ message: 'Please fill all the fields' });
-//     }
-
-//     if (password !== confirmPassword) {
-//         return res.status(400).json({ message: 'Passwords do not match' });
-//     }
-
-//     try {
-//         // Check if the user already exists
-//         console.log("Checking if user exists...");
-//         const userExists = await User.findOne({ email });
-        
-//         if (userExists) {
-//             console.log("User already exists");
-//             return res.status(400).json({ message: 'User already exists' });
-//         }
-
-//         console.log("Creating a new user...");
-//         // Create new user
-//         const newUser = await User.create({
-//             name,
-//             email,
-//             phoneNumber,
-//             password,
-//         });
-
-//         console.log("User created successfully:", newUser);
-
-//         // Return success and JWT token
-//         res.status(201).json({
-//             _id: newUser._id,
-//             name: newUser.name,
-//             email: newUser.email,
-//             phoneNumber: newUser.phoneNumber,
-//             token: generateToken(newUser._id),
-//         });
-//     } catch (error) {
-//         console.error("Error occurred during user registration:", error);
-//         res.status(500).json({ message: 'Error registering user', error: error.message });
-//     }
-// };
-
-
-
-
-
 
 // User login
 export const loginUser = async (req, res) => {
@@ -234,10 +181,50 @@ export const getUserDetails = async (req, res) => {
             email: user.email,
             phoneNumber: user.phoneNumber,
             role: user.role, // Ensure this field exists in your User model
-            gender: user.gender // Ensure this field exists in your User model
+            gender: user.gender, // Ensure this field exists in your User model
+            profileImage: user.profileImage // Include profile image in the response
+
         });
     } catch (error) {
         console.error("Error fetching user details:", error);
         res.status(500).json({ message: 'Error fetching user details', error: error.message });
+    }
+};
+
+
+export const editUserProfile = async (req, res) => {
+    try {
+        const userId = req.user.id; // Assuming you have middleware that attaches user info to req
+        const { name, email, phoneNumber, gender, profileImage, role } = req.body;
+
+        console.log('req.body:', req.body); 
+
+        // Find user by ID and update the fields
+        const updatedUser = await User.findByIdAndUpdate(userId, {
+            name,
+            email,
+            phoneNumber,
+            gender,
+            profileImage,
+            role,
+        }, { new: true, runValidators: true }); // new: true returns the updated document
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Return updated user details, excluding password
+        res.json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            phoneNumber: updatedUser.phoneNumber,
+            role: updatedUser.role,
+            gender: updatedUser.gender,
+            profileImage: updatedUser.profileImage, // Include profile image in response
+        });
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        res.status(500).json({ message: 'Error updating user profile', error: error.message });
     }
 };

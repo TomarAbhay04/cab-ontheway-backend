@@ -21,12 +21,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "user",
     },
-    Gender: {
+    gender: {
         type: String,
     },
     password: {
         type: String,
         required: true,
+    },
+    profileImage: {  // New field for profile image
+        type: String,
+        default: '',  // Default value can be an empty string or a placeholder image
     },
 }, { timestamps: true });
 
