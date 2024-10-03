@@ -71,7 +71,6 @@
 
 // export default app;
 
-
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
@@ -82,7 +81,7 @@ import userRoutes from './routes/userRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import userSubRoutes from './routes/userSubRoutes.js';
-import { createServer } from 'http'; // Change here
+import { createServer } from 'http'; // Import createServer from http
 import { Server as SocketIOServer } from 'socket.io';
 
 dotenv.config();
@@ -91,10 +90,11 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Set up Socket.IO with Express
-const httpServer = createServer(app); // Use createServer from http
+const httpServer = createServer(app); // Create HTTP server
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: '*', // Allow all origins (you can restrict this to your frontend's origin)
+    origin: '*', // Allow all origins (modify for production security)
+    methods: ['GET', 'POST'], // Specify allowed methods if needed
   },
 });
 
@@ -105,7 +105,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // MongoDB connection
 const mongoURI = process.env.MONGODB_URI;
-mongoose.connect(mongoURI)
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }) // Use appropriate options
   .then(() => console.log('MongoDB Connected…'))
   .catch((err) => {
     console.error('Error connecting to MongoDB:', err);
@@ -137,13 +137,10 @@ io.on('connection', (socket) => {
   // Add more event listeners as needed
 });
 
-// Start the server (for local testing)
-if (process.env.NODE_ENV !== 'production') {
-  httpServer.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-}
+// Start the server
+httpServer.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
-// Export the HTTP server for Vercel
+// Export the HTTP server for Vercel (if needed)
 export default httpServer;
-
