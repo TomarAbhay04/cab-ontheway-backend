@@ -83,10 +83,11 @@ import userRoutes from './routes/userRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import userSubRoutes from './routes/userSubRoutes.js';
-import { createServer } from 'http'; // Import createServer from http
+import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
+import { socketMiddleware } from './middleware/socketMiddleware.js'; // Import the socket middleware
 
-dotenv.config(); 
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -107,13 +108,14 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // Define API routes
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename); 
+const __dirname = path.dirname(__filename);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.get('/', (req, res) => {
   res.send('Server is up and running!');
 });
 
+// Use API routes
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/payment', paymentRoutes);
@@ -129,6 +131,9 @@ const io = new SocketIOServer(httpServer, {
     methods: ['GET', 'POST'], // Specify allowed methods if needed
   },
 });
+
+// Use the socket middleware to attach io to the request object
+app.use(socketMiddleware(io));
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
@@ -150,6 +155,5 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Export the HTTP server for Vercel
 export default httpServer;
-
 
 
