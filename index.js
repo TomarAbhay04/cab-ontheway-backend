@@ -85,7 +85,7 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import userSubRoutes from './routes/userSubRoutes.js';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import { socketMiddleware } from './middleware/socketMiddleware.js'; // Import the socket middleware
+import { socketMiddleware } from './middleware/socket.js'; // Import the socket middleware
 
 dotenv.config();
 
