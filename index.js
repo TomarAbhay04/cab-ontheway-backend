@@ -129,6 +129,7 @@ const io = new SocketIOServer(httpServer, {
   cors: {
     origin: '*', // Allow all origins (modify for production security)
     methods: ['GET', 'POST'], // Specify allowed methods if needed
+    credentials: true,
   },
 });
 
