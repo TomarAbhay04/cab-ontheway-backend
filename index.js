@@ -70,6 +70,10 @@
 // });
 
 // export default app;
+
+
+
+
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
@@ -80,22 +84,12 @@ import userRoutes from './routes/userRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import userSubRoutes from './routes/userSubRoutes.js';
-import { createServer } from 'http'; // Import createServer from http
 import { Server as SocketIOServer } from 'socket.io';
 
 dotenv.config(); 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-// Set up Socket.IO with Express
-const httpServer = createServer(app); // Create HTTP server
-const io = new SocketIOServer(httpServer, {
-  cors: {
-    origin: '*', // Allow all origins (modify for production security)
-    methods: ['GET', 'POST'], // Specify allowed methods if needed
-  },
-});
 
 // Middleware
 app.use(cors());
@@ -125,6 +119,26 @@ app.use('/api/posts', postRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/payment-sub', userSubRoutes);
 
+// Create HTTP server for Socket.IO
+const httpServer = (req, res) => {
+  // This is necessary for Vercel serverless functions
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  
+  // Handle API routes with express
+  app(req, res);
+};
+
+// Set up Socket.IO with Express
+const io = new SocketIOServer(httpServer, {
+  cors: {
+    origin: '*', // Allow all origins (modify for production security)
+    methods: ['GET', 'POST'], // Specify allowed methods if needed
+  },
+});
+
 // Socket.IO connection handling
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
@@ -136,15 +150,12 @@ io.on('connection', (socket) => {
   // Add more event listeners as needed
 });
 
-// Export the HTTP server for Vercel (if needed)
-export default (req, res) => {
-  // This is necessary for Vercel serverless functions
-  httpServer(req, res);
-};
+// Export the HTTP server for Vercel
+export default httpServer;
 
 // Start the server only if running locally
 if (process.env.NODE_ENV !== 'production') {
-  httpServer.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
 }
