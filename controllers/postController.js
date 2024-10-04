@@ -20,7 +20,7 @@ export const createPost = async (req, res) => {
 
     await newPost.save();
 
-    req.io.emit('newPost', newPost);
+    // req.io.emit('newPost', newPost);
     
     return res.status(201).json({ message: 'Post created successfully', post: newPost });
   } catch (error) {

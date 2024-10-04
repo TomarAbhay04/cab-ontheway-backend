@@ -18,18 +18,18 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // HTTP server and Socket.IO setup
-const server = http.createServer(app);
-const io = new SocketIOServer(server, {
-  cors: {
-    origin: '*',  // Allow all origins (you can restrict this to your frontend's origin)
-  }
-});
+// const server = http.createServer(app);
+// const io = new SocketIOServer(server, {
+//   cors: {
+//     origin: '*',  // Allow all origins (you can restrict this to your frontend's origin)
+//   }
+// });
 
 // Middleware to attach `io` to the `req` object
-app.use((req, res, next) => {
-    req.io = io;  // Attach Socket.IO instance to request
-    next();
-  });
+// app.use((req, res, next) => {
+//     req.io = io;  // Attach Socket.IO instance to request
+//     next();
+//   });
    
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename); 
