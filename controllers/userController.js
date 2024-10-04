@@ -72,13 +72,23 @@ export const sendOTP = async (req, res) => {
         const formattedPhoneNumber = `+${phoneNumber}`; // Make sure to include the country code
 
         // Verify OTP using Twilio Verify with v2 services
-        const verification = await client.verify.v2.services(serviceSid)
-            .verificationChecks
-            .create({ to: formattedPhoneNumber, code: otp });
+        // const verification = await client.verify.v2.services(serviceSid)
+        //     .verificationChecks
+        //     .create({ to: formattedPhoneNumber, code: otp });
 
-        if (verification.status === "approved") {
-            // Check if the user already exists
-            const userExists = await User.findOne({ email });
+        // if (verification.status === "approved") {
+        //     // Check if the user already exists
+        //     const userExists = await User.findOne({ email });
+
+
+
+        // currently use static otp 
+
+        const validOtp = "1234"; 
+
+        if (otp === validOtp) {
+             // Check if the user already exists
+             const userExists = await User.findOne({ email });
 
             if (userExists) {
                 return res.status(400).json({ message: 'User already exists' });
